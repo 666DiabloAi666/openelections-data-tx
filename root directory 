@@ -1,0 +1,41 @@
+# Root Directory Structure
+# openelections_intel/
+# ├── rust_core/
+# │   └── election_engine/        # Rust data validation, transformation engine
+# ├── python_backend/
+# │   ├── api/                    # FastAPI app for querying and ML services
+# │   ├── ml_models/             # ML + RL models for prediction and simulation
+# │   ├── nlp_modules/           # NLP pipeline for speech/news analysis
+# │   └── summarizer/            # AI-generated county-level narratives
+# ├── dashboard_ui/              # React/Plotly dashboard interface
+# ├── data/
+# │   ├── raw/                   # Original OpenElections data
+# │   ├── processed/             # Cleaned/validated by Rust core
+# │   └── features/              # ML-ready features
+# ├── scripts/                   # Ingestion, migration scripts
+# └── README.md
+
+# Example: FastAPI endpoint to query county-level election data intelligently
+# File: python_backend/api/main.py
+from fastapi import FastAPI, Query
+from pydantic import BaseModel
+import pandas as pd
+import joblib
+from ml_models.turnout_predictor import predict_turnout
+
+app = FastAPI()
+
+class CountyQuery(BaseModel):
+    county: str
+    year: int
+
+@app.post("/predict_turnout")
+def get_turnout(query: CountyQuery):
+    result = predict_turnout(query.county, query.year)
+    return {"predicted_turnout": result}
+
+# Rust example stub (lib.rs in rust_core/election_engine)
+#[derive(Debug)]
+pub struct CountyVoteRecord {
+    pub county: String,
+    pub precinct: String
